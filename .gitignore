@@ -1,0 +1,13 @@
+.project
+.classpath
+.settings
+target
+bin
+*.iml
+.idea
+.DS_Store
+dependency-reduced-pom.xml
+.vscode
+node_modules
+openwhisk_action.zip
+.java-version
