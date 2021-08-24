@@ -14,7 +14,7 @@
     <artifactId>org.apache.sling.thumbnails</artifactId>
     <name>Apache Sling Thumbnail Support</name>
     <description>An API and Service for creating and transforming images and documents into thumbnails</description>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <properties>
         <sling.java.version>8</sling.java.version>
@@ -328,4 +328,8 @@
         </dependency>
 
     </dependencies>
+
+  <scm>
+    <tag>org.apache.sling.thumbnails-1.0.0</tag>
+  </scm>
 </project>
