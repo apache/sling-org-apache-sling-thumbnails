@@ -44,7 +44,7 @@ public enum OutputFileFormat {
     /**
      * Loads the output format
      * 
-     * @param request the requested format
+     * @param format the requested format
      * @return the format requested
      */
     public static OutputFileFormat forValue(@NotNull String format) {
