@@ -66,7 +66,9 @@ public class ThumbnailsWebConsoleTest {
         when(thumbnailSupport.getMetaTypePropertyPath("nt:file")).thenReturn("jcr:content/jcr:mimeType");
 
         TransformerImpl transformer = new TransformerImpl(providers, thumbnailSupport, th);
-        wc = new ThumbnailsWebConsole(thumbnailSupport, transformer);
+
+        TransformationCache cache = new TransformationCache(null);
+        wc = new ThumbnailsWebConsole(thumbnailSupport, transformer, cache);
 
     }
 

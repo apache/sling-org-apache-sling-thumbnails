@@ -20,5 +20,9 @@ Registered Transformation Providers
 ========================
 sling/thumbnails/transformers/crop=org.apache.sling.thumbnails.internal.transformers.CropHandler
 sling/thumbnails/transformers/resize=org.apache.sling.thumbnails.internal.transformers.ResizeHandler
+</pre><br/>
+<pre>
+Cached Transformations
+========================
 </pre>
 </div>

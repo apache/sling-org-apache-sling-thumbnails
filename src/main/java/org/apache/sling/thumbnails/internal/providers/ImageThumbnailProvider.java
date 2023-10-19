@@ -18,7 +18,8 @@ package org.apache.sling.thumbnails.internal.providers;
 
 import java.io.InputStream;
 
-import com.google.common.net.MediaType;
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.thumbnails.extension.ThumbnailProvider;
@@ -32,8 +33,13 @@ public class ImageThumbnailProvider implements ThumbnailProvider {
 
     @Override
     public boolean applies(Resource resource, String metaType) {
-        return MediaType.parse(metaType).is(MediaType.ANY_IMAGE_TYPE)
-                && !MediaType.SVG_UTF_8.is(MediaType.parse(metaType));
+
+         try {
+            MimeType mt = new MimeType(metaType);
+            return mt.match("image/*") || mt.match("image/svg+xml");
+        } catch (MimeTypeParseException e) {
+            return false;
+        }
     }
 
     @Override

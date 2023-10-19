@@ -20,20 +20,22 @@ package org.apache.sling.thumbnails.internal;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.common.collect.Lists;
-
 import org.apache.felix.webconsole.AbstractWebConsolePlugin;
 import org.apache.felix.webconsole.WebConsoleConstants;
-import org.apache.sling.thumbnails.extension.ThumbnailProvider;
-import org.apache.sling.thumbnails.extension.TransformationHandler;
 import org.apache.sling.thumbnails.ThumbnailSupport;
 import org.apache.sling.thumbnails.Transformer;
+import org.apache.sling.thumbnails.extension.ThumbnailProvider;
+import org.apache.sling.thumbnails.extension.TransformationHandler;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -57,11 +59,14 @@ public class ThumbnailsWebConsole extends AbstractWebConsolePlugin {
 
     private final Transformer transformer;
     private final ThumbnailSupport thumbnailSupport;
+    private final TransformationCache transformationCache;
 
     @Activate
-    public ThumbnailsWebConsole(@Reference ThumbnailSupport thumbnailSupport, @Reference Transformer transformer) {
+    public ThumbnailsWebConsole(@Reference ThumbnailSupport thumbnailSupport, @Reference Transformer transformer,
+            @Reference TransformationCache transformationCache) {
         this.thumbnailSupport = thumbnailSupport;
         this.transformer = transformer;
+        this.transformationCache = transformationCache;
     }
 
     @Override
@@ -91,11 +96,17 @@ public class ThumbnailsWebConsole extends AbstractWebConsolePlugin {
 
         printSeparator(pw, "Registered Thumbnail Providers", false);
         List<ThumbnailProvider> providers = ((TransformerImpl) transformer).getThumbnailProviders();
-        Lists.reverse(providers).forEach(p -> pw.println(p.getClass().getName()));
+        Collections.reverse(providers);
+        providers.forEach(p -> pw.println(p.getClass().getName()));
 
         printSeparator(pw, "Registered Transformation Providers", false);
         List<TransformationHandler> handlers = ((TransformerImpl) transformer).getHandlers();
         handlers.forEach(h -> pw.println(h.getResourceType() + "=" + h.getClass().getCanonicalName()));
+
+        printSeparator(pw, "Cached Transformations", false);
+        Set<Entry<String, Optional<String>>> cache = transformationCache.getCacheEntries();
+        cache.forEach(e -> pw.println(e.getKey() + " => " + e.getValue().get()));
+
         pw.println("</pre>");
         pw.println("</div>");
     }

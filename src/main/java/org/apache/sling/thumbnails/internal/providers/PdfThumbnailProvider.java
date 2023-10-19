@@ -22,9 +22,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 import javax.imageio.ImageIO;
-
-import com.google.common.net.MediaType;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
@@ -32,6 +32,8 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.thumbnails.extension.ThumbnailProvider;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A thumbnail provider for PDF documents.
@@ -39,9 +41,17 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThumbnailProvider.class, immediate = true)
 public class PdfThumbnailProvider implements ThumbnailProvider {
 
+    private static final Logger log = LoggerFactory.getLogger(PdfThumbnailProvider.class);
+
     @Override
     public boolean applies(Resource resource, String metaType) {
-        return MediaType.PDF.is(MediaType.parse(metaType));
+         try {
+            MimeType mt = new MimeType(metaType);
+            return mt.match("application/pdf");
+        } catch (MimeTypeParseException e) {
+            log.warn("Failed to parse mime type", e);
+            return false;
+        }
     }
 
     @Override

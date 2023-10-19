@@ -27,9 +27,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 import javax.imageio.ImageIO;
-
-import com.google.common.net.MediaType;
 
 import org.apache.poi.hslf.usermodel.HSLFSlideShow;
 import org.apache.poi.sl.usermodel.Slide;
@@ -37,18 +37,22 @@ import org.apache.poi.sl.usermodel.SlideShow;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.commons.classloader.DynamicClassLoaderManager;
-import org.apache.sling.thumbnails.extension.ThumbnailProvider;
 import org.apache.sling.thumbnails.OutputFileFormat;
 import org.apache.sling.thumbnails.ThumbnailSupport;
+import org.apache.sling.thumbnails.extension.ThumbnailProvider;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides Thumbnails for Microsoft PPT and PPTX files.
  */
 @Component(service = ThumbnailProvider.class, immediate = true)
 public class SlideShowThumbnailProvider implements ThumbnailProvider {
+
+    private static final Logger log = LoggerFactory.getLogger(SlideShowThumbnailProvider.class);
 
     private final DynamicClassLoaderManager classLoaderManager;
     private final ThumbnailSupport thumbnailSupport;
@@ -62,8 +66,26 @@ public class SlideShowThumbnailProvider implements ThumbnailProvider {
 
     @Override
     public boolean applies(Resource resource, String metaType) {
-        MediaType mt = MediaType.parse(metaType);
-        return mt.is(MediaType.MICROSOFT_POWERPOINT) || mt.is(MediaType.OOXML_PRESENTATION);
+        try {
+            MimeType mt = new MimeType(metaType);
+            return mt.match("application/vnd.ms-powerpoint")
+                    || mt.match("application/vnd.openxmlformats-officedocument.presentationml.presentation");
+        } catch (MimeTypeParseException e) {
+            log.warn("Failed to parse mime type", e);
+            return false;
+        }
+    }
+
+    private boolean isLegacyFormat(Resource resource) {
+
+        try {
+            MimeType mt = new MimeType(resource.getValueMap()
+                    .get(thumbnailSupport.getMetaTypePropertyPath(resource.getResourceType()), String.class));
+            return mt.match("application/vnd.ms-powerpoint");
+        } catch (MimeTypeParseException e) {
+            log.warn("Failed to parse mime type", e);
+            return false;
+        }
     }
 
     @Override
@@ -73,11 +95,9 @@ public class SlideShowThumbnailProvider implements ThumbnailProvider {
         }
 
         SlideShow<?, ?> ppt = null;
-        MediaType mt = MediaType.parse(resource.getValueMap()
-                .get(thumbnailSupport.getMetaTypePropertyPath(resource.getResourceType()), String.class));
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 InputStream is = resource.adaptTo(InputStream.class)) {
-            if (mt.is(MediaType.MICROSOFT_POWERPOINT)) {
+            if (isLegacyFormat(resource)) {
                 ppt = new HSLFSlideShow(is);
             } else {
                 ppt = new XMLSlideShow(is);

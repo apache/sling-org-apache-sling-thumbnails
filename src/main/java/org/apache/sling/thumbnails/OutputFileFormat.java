@@ -16,8 +16,6 @@
  */
 package org.apache.sling.thumbnails;
 
-import com.google.common.net.MediaType;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +26,7 @@ import org.osgi.annotation.versioning.ProviderType;
  */
 @ProviderType
 public enum OutputFileFormat {
-    GIF(MediaType.GIF.toString()), JPEG(MediaType.JPEG.toString()), PNG(MediaType.PNG.toString());
+    GIF("image/gif"), JPEG("image/jpeg"), PNG("image/png");
 
     /**
      * Loads the output format requested in the specified request suffix.
