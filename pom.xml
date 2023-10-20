@@ -14,7 +14,7 @@
     <artifactId>org.apache.sling.thumbnails</artifactId>
     <name>Apache Sling Thumbnail Support</name>
     <description>An API and Service for creating and transforming images and documents into thumbnails</description>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
 
     <properties>
         <sling.java.version>8</sling.java.version>
@@ -24,7 +24,7 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-thumbnails.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-thumbnails.git</developerConnection>
         <url>https://github.com/apache/sling-org-apache-sling-thumbnails.git</url>
-        <tag>org.apache.sling.thumbnails-1.0.2</tag>
+        <tag>org.apache.sling.thumbnails-1.0.0</tag>
     </scm>
 
     <build>
